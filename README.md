@@ -56,7 +56,7 @@ Query mengalami Full Table Scan karena kolom `REF_DOC_NO` belum memiliki index. 
 
 **Before (Execution Plan):**
 
-![alt text](<EP BEFORE.png>)
+![Explain Before](images/ep_before.png)
 
 - Access Path: FULL TABLE SCAN on `REMOTE.ITGR_HEADER`
 - Cost: 1.634
@@ -70,7 +70,7 @@ ON REMOTE.ITGR_HEADER(REF_DOC_NO);
 
 **After (Execution Plan):**
 
-![alt text](<EP AFTER.png>)
+![Explain After](images/ep_after.png)
 
 - Access Path: INDEX RANGE SCAN → TABLE ACCESS BY INDEX ROWID
 - Cost menurun drastis
