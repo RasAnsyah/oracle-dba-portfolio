@@ -1,0 +1,5 @@
+.vscode/
+*.log
+*.tmp
+*.zip
+.DS_Store

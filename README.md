@@ -36,7 +36,58 @@ Project Administration and Optimization Oracle Database
 
 **Direktori:** `./01-SQL-Performance-Tuning-Case-Study`
 
-Deskripsi dan file sama seperti sebelumnya.
+**Deskripsi:**
+Studi kasus ini menunjukkan proses *tuning* sebuah *query* SQL yang memiliki performa buruk pada sebuah *dataset* internal. Query mengambil data kapal berdasarkan nomor dokumen referensi, namun mengalami Full Table Scan yang menghambat performa.
+
+---
+
+#### 🔧 Tuning Case – Full Table Scan to Index Range Scan
+
+**📌 SQL ID:** `0r7t74avwxp3g`
+
+```sql
+SELECT NAMA_KAPAL
+FROM REMOTE.ITGR_HEADER
+WHERE REF_DOC_NO = :REF_DOC_NO AND ROWNUM = 1;
+```
+
+**Masalah:**
+Query mengalami Full Table Scan karena kolom `REF_DOC_NO` belum memiliki index. Hal ini menyebabkan query lambat meskipun hanya membutuhkan satu baris data.
+
+**Before (Execution Plan):**
+
+![alt text](<EP BEFORE.png>)
+
+- Access Path: FULL TABLE SCAN on `REMOTE.ITGR_HEADER`
+- Cost: 1.634
+- Estimasi: membaca seluruh data di tabel
+
+**Tindakan Perbaikan:**
+```sql
+CREATE INDEX REMOTE.ITGR_HEADER_IDX01
+ON REMOTE.ITGR_HEADER(REF_DOC_NO);
+```
+
+**After (Execution Plan):**
+
+![alt text](<EP AFTER.png>)
+
+- Access Path: INDEX RANGE SCAN → TABLE ACCESS BY INDEX ROWID
+- Cost menurun drastis
+- Oracle Optimizer memilih path yang lebih efisien
+
+**Hasil:**
+- Query menjadi jauh lebih cepat
+- Beban I/O lebih rendah
+- Performa sistem meningkat signifikan saat query digunakan oleh aplikasi
+
+**File Repositori:**
+- `initial_sql_query.sql`
+- `optimized_sql_query.sql`
+- `execution_plan_before.txt`
+- `execution_plan_after.txt`
+- `create_index_script.sql`
+- `tuning_notes_ref_doc_no.md`
 
 ---
 
@@ -68,17 +119,7 @@ Deskripsi dan file sama seperti sebelumnya.
 
 **Direktori:** `./05-Real-World-DBA-Ops`
 
-**Deskripsi:**
-Folder ini mendokumentasikan aktivitas nyata yang saya lakukan selama bulan Desember 2022 saat mendukung lingkungan Oracle Database produksi di PT Pelabuhan Indonesia (Persero) – Regional 3. Laporan ini mencakup tugas-tugas preventif, korektif, dan tuning harian.
-
-**Subfolder dan Konten:**
-- `preventive-maintenance/` – Tugas rutin seperti pembersihan log `.trc`, pengecekan growth tablespace, dan threshold monitoring.
-- `corrective-maintenance/` – Kasus nyata seperti pemulihan datafile via RMAN, resolusi disk full, dan restart services.
-- `performance-tuning/` – Tuning query berdasarkan SQL ID dari aplikasi internal dan review AWR.
-- `documentation/` – File PDF laporan bulanan yang sudah disensor, serta log tambahan.
-
-**Tujuan:**
-Menunjukkan bahwa saya tidak hanya mengerjakan simulasi proyek, tapi juga memiliki pengalaman langsung menangani sistem produksi 24/7 yang bersifat kritikal.
+Deskripsi dan file sama seperti sebelumnya.
 
 ---
 
